@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<h1><font color="red">Welcome in my Book Database website</font></h1>
+<h3>we design the databe with Data Modeling Using the
+Entity-Relationship (ER) Model and using Relational Database Design by ER-to-Relational Mapping</h3>
+<br/>
+<h2>we have many database (table) on book</h2>
+<h2>&nbsp;&nbsp;- Books : { BookID , Title , Pages , Category , Publish No , Publish Date }</h2>
+<h2>&nbsp;&nbsp;- Authors : { No , Fname ,Lname }</h2>
+<h2>&nbsp;&nbsp;- Locations : { No , Location }</h2>
+<h2>&nbsp;&nbsp;- Publishers : { No , Publisher Name ,Phone No }</h2>
+<h2>&nbsp;&nbsp;- Sent_to : { Author ID , Publisher No }</h2>
+<h2>&nbsp;&nbsp;- Write_to : { Book ID , Author ID }</h2>
+
+
+
+{% endblock %}

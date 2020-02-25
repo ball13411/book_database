@@ -1,0 +1,72 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+{% if messages %}
+{% for message in messages %}
+<style>
+.alert {
+padding: 20px;
+background-color: #f44336;
+color: white;
+}
+
+.closebtn {
+margin-left: 15px;
+color: white;
+font-weight: bold;
+float: right;
+font-size: 22px;
+line-height: 20px;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.closebtn:hover {
+color: black;
+}
+</style>
+<div class="alert">
+    <center><strong>{{ message }}</strong>&nbsp;your user can't use function insert!</center>
+</div>
+{% endfor %}
+{% endif %}
+
+<body>
+    <div class="container">
+      <h1>Book : Database</h1>
+        <h1>
+        <form method="post" >
+          {% csrf_token %}
+          {{ choice }}
+          <input class="btn btn-info" type="submit" value="select" name="table">
+        </form>
+        </h1>
+    </div>
+
+  <div class="container">
+    <table class="table table-striped" >
+      <thead>
+      <tr class="warning">
+          {% for column in columns %}
+            <th>{{ column }}</th>
+          {% endfor %}
+      </tr>
+      </thead>
+      <tbody id="myTable">
+    {% for result in myresult %}
+        <tr>
+        {% for r in result %}
+            <td>&nbsp;{{ r }}</td>
+        {% endfor %}
+<!--            <td><a href="" class="btn btn-warning btn-xs" name="edit">Edit</a></td>-->
+<!--            <td>Delete</td>-->
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</body>
+
+{% endblock %}
+
