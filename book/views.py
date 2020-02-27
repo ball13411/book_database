@@ -36,6 +36,20 @@ def login(request):
     if request.method == 'POST':
         username = request.POST['Username']
         password = request.POST['Password']
+        mydb = mysql.connector.connect(
+          host="localhost",
+          user="user1",
+          passwd="1234",
+          database="book"
+        )
+        mycursor = mydb.cursor()
+        sql = "SELECT * FROM Userdb"
+        mycursor.execute(sql)
+        myresult = mycursor.fetchall()
+        for testuser in myresult:
+            if username in testuser and password in testuser:
+                username = "user1"
+                password = "1234"
         try:
             mydb = mysql.connector.connect(
                     host ="localhost",
@@ -45,11 +59,12 @@ def login(request):
                     )
             status = "logout"
             mycursor = mydb.cursor()
+            username = request.POST['Username']
             try:
                 mycursor.execute(("INSERT INTO cinsert (No, ID) VALUES (%s, %s)"),['10000000','71'])
                 mydb.commit()
                 level = 1
-                print(level)
+
             except mysql.connector.errors.ProgrammingError:
                 level = 0
             return redirect('/books')
@@ -58,6 +73,40 @@ def login(request):
             messages.info(request, '!!! Login Error !!!')
     return render(request,'login.html', {'user':login_userForm,'pass':login_passwordForm,'login':username,'logout':status,'level':level})
 
+#---------------------------------------------------------------------------------------------------------
+def register(request):
+    global status
+    log = 0
+    if request.method == "POST":
+        values = []
+        name = request.POST['aabb']
+        email = request.POST['Email']
+        passwd = request.POST['pass']
+        con_passwd = request.POST["con_pass"]
+        if passwd != con_passwd:
+            messages.info(request, '!!! Password Error !!!')
+            log = 1
+            return render(request,'register.html',{'log':log,'logout':status})
+        try:
+            mydb = mysql.connector.connect(
+                        host ="localhost",
+                        user = "root1",
+                        passwd = "1341",
+                        database ="book"
+                        )
+            mycursor = mydb.cursor()
+            values.append(name),values.append(email),values.append(passwd)
+            insert_user = ("INSERT INTO Userdb "
+                            "(Username, Email, Password) "
+                            "VALUES (%s, %s, %s)")
+            mycursor.execute(insert_user, values)
+            mydb.commit()
+            messages.info(request, '!!! Register Success !!!')
+            log = 2
+        except mysql.connector.errors.IntegrityError:
+            messages.info(request, '!!! User Error !!!')
+            log = 3
+    return render(request,'register.html',{'log':log,'logout':status})
 #---------------------------------------------------------------------------------------------------------
 def database(request):
     global mysql,mydb,level

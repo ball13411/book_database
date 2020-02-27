@@ -4,14 +4,23 @@
 <br/>
 <br/>
 <H1><center>Login User</center></H1>
-
+<br\>
+<style>
+    input[type=submit] {
+    width: 10em;  height: 2.4em;
+}
+</style>
 <form method="post">
+    <center>
     {% csrf_token %}
-    <H3><center>{{ user }}</center></H3>
+    <H3>{{ user }}</H3>
     <br />
-    <H3><center>{{ pass }}</center></H3>
-    <center><input class="btn btn-info" type="submit" value="Login"></center>
+    <H3>{{ pass }}</H3><br\>
+    <input class="btn btn-info" type="submit" value="Login" size="12">
+    <a href="/register" class="btn btn-info">Register</a>
+    </center>
 </form>
+
 <br/>
 
 {% if messages %}
