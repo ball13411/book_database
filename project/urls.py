@@ -21,12 +21,13 @@ from book import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url('index', views.index),
+    url('query', views.query),
     url('insert', views.insert),
     url('login', views.login),
     url('database', views.database),
     url('manage', views.manage),
-    # url('delete', views.delete),
+    url('books',views.books),
+    url('delete', views.delete),
     url('update', views.update),
     url('', views.home),
     url('home', views.home),

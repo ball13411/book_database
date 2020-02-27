@@ -12,6 +12,7 @@ class login_passwordForm(forms.Form):
 # class insert_submitForm(forms.Form):
 #     Password = forms.
 table_CHOICES =(
+    ("---","--------"),
     ("Books", "Books"),
     ("Authors", "Authors"),
     ("Locations", "Locations"),

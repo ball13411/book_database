@@ -19,20 +19,28 @@
           <a class="nav-link" href="/home">Home</a>
         </li>
         <li class="nav-item active">
-          <a class="nav-link" href="/index">Query</a>
+          <a class="nav-link" href="/books">Books</a>
         </li>
         <li class="nav-item active">
           <a class="nav-link" href="/database">Database</a>
         </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="/insert">Insert</a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="/manage">Manage</a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="/update">Update</a>
-        </li>
+        {% if level == 1 %}
+          <li class="nav-item active">
+            <a class="nav-link" href="/query">Query</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/insert">Insert</a>
+          </li>
+<!--          <li class="nav-item active">-->
+<!--            <a class="nav-link" href="/manage">Manage</a>-->
+<!--          </li>-->
+          <li class="nav-item active">
+            <a class="nav-link" href="/update">Update</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/delete">Delete</a>
+          </li>
+        {% endif %}
       </ul>
       <ul class="navbar-nav justify-content-end">
         <li class="nav-item active" >

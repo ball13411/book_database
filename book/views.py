@@ -6,14 +6,16 @@ import mysql.connector
 # Create your views here.
 
 #global variable
-username,password,table,mydb,status,primary_key = '','','','','login',''
+username,password,table,mydb,status,primary_key,level,mycursor = '','','','','login','',0,''
 columns = []
 #---------------------------------------------------------------------------------------------------------
-def index(request):
+def query(request):
     myresult,columns,count = [],[],0
-    global username,mydb
+    global username,mydb,status,level
     if username == "":
         return redirect('/login')
+    if level == 0:
+        return redirect('/home')
     if request.method == 'POST' and 'query1' in request.POST:
         mycursor = mydb.cursor()
         try:
@@ -24,46 +26,46 @@ def index(request):
             count = 1
         except:
             myresult,columns = [],[]
-    return render(request, 'index.html',
-                  {'myresult':myresult,'columns':columns,'name':username,'login':username,'logout':status,'count':count})
-
+    return render(request, 'query.html',
+                  {'myresult':myresult,'columns':columns,'name':username,'login':username,'logout':status,'count':count,'level':level})
 
 #---------------------------------------------------------------------------------------------------------
 def login(request):
-    global mydb,username,password,status
-    username = ""
-    password = ""
-    status = "login"
+    global username,password,status,level,mydb
+    username,password,status = "","","login"
     if request.method == 'POST':
         username = request.POST['Username']
         password = request.POST['Password']
         try:
             mydb = mysql.connector.connect(
-            host ="localhost",
-            user = username,
-            passwd = password,
-            database ="book"
-            )
+                    host ="localhost",
+                    user = username,
+                    passwd = password,
+                    database ="book"
+                    )
             status = "logout"
-            return redirect('/index')
-        except:
+            mycursor = mydb.cursor()
+            try:
+                mycursor.execute(("INSERT INTO cinsert (No, ID) VALUES (%s, %s)"),['10000000','71'])
+                mydb.commit()
+                level = 1
+                print(level)
+            except mysql.connector.errors.ProgrammingError:
+                level = 0
+            return redirect('/books')
+        except mysql.connector.errors.ProgrammingError:
             username = ""
             messages.info(request, '!!! Login Error !!!')
-    return render(request,'login.html', {'user':login_userForm,'pass':login_passwordForm,'login':username,'logout':status})
+    return render(request,'login.html', {'user':login_userForm,'pass':login_passwordForm,'login':username,'logout':status,'level':level})
 
 #---------------------------------------------------------------------------------------------------------
 def database(request):
+    global mysql,mydb,level
     myresult,columns,count = [],[],0
     if username == "":
         return redirect('/login')
     if request.method == 'POST':
         table = request.POST['Select_Table']
-        mydb = mysql.connector.connect(
-        host ="localhost",
-        user = 'user1',
-        passwd = '1234',
-        database ="book"
-        )
         mycursor = mydb.cursor()
         try:
             sql = "SELECT * FROM "+str(table)
@@ -75,43 +77,25 @@ def database(request):
             myresult,columns = [],[]
 
     return render(request, 'database.html',
-                  {'choice':SelecttableForm,'myresult':myresult,'columns':columns,'login':username,'logout':status,'count':count})
+                  {'choice':SelecttableForm,'myresult':myresult,'columns':columns,'login':username,'logout':status,'count':count,'level':level})
 
 #---------------------------------------------------------------------------------------------------------
 def insert(request):
-    global columns,table,username,password
-    add_table,values,check,count = "",[],False,0
+    global columns,table,username,password,level,mydb
+    add_table,values,count = "",[],0
     if username == "":
         return redirect('/login')
-    try:
-        mydb = mysql.connector.connect(
-        host ="localhost",
-        user = username,
-        passwd = password,
-        database ="book"
-        )
-        mycursor = mydb.cursor()
-        mycursor.execute(("INSERT INTO cinsert (No, ID) VALUES (%s, %s)"),['1','1'])
-        mydb.commit()
-        mycursor.close()
-        mydb.close()
-        check = True
-    except mysql.connector.errors.ProgrammingError:
-        messages.info(request, '!!! User Error !!!')
-    if request.method == 'POST' and 'table' in request.POST and check:
+    if level == 0:
+        return redirect('/home')
+    if request.method == 'POST' and 'table' in request.POST and level == 1:
         table = request.POST['Select_Table']
-        mydb = mysql.connector.connect(
-        host ="localhost",
-        user = username,
-        passwd = password,
-        database ="book"
-        )
-        mycursor = mydb.cursor()
         sql = "SELECT * FROM "+str(table)+";"
+        mycursor = mydb.cursor()
         mycursor.execute(sql)
+        myresullt = mycursor.fetchall()
         columns = mycursor.column_names
         count = 1
-    if request.method == 'POST' and 'insert' in request.POST :
+    if request.method == 'POST' and 'insert' in request.POST:
         for column in columns:
             value = request.POST[column]
             values.append(value)
@@ -140,96 +124,37 @@ def insert(request):
                         "(Book_ID, Author_ID) "
                         "VALUES (%s, %s)")
         mydb = mysql.connector.connect(
-        host ="localhost",
-        user = username,
-        passwd = password,
-        database ="book"
-        )
+                host ="localhost",
+                user = username,
+                passwd = password,
+                database ="book"
+                )
         mycursor = mydb.cursor()
         mycursor.execute(add_table, values)
         mydb.commit()
-        mycursor.close()
-        mydb.close()
         columns = []
-
-    return render(request,'insert.html',{'choice':SelecttableForm,'columns':columns,'login':username,'logout':status,'count':count})
+        messages.info(request, 'Insert Success!!!')
+    return render(request,'insert.html',
+                  {'choice':SelecttableForm,'columns':columns,'login':username,'logout':status,'count':count,'level':level})
 
 #---------------------------------------------------------------------------------------------------------
 def home(request):
-    global username
-    return render(request,'home.html',({'login':username,'logout':status}))
+    global username,level
+    return render(request,'home.html',({'login':username,'logout':status,'level':level}))
 #----------------------------------------------------------------------------------------------------------
-def manage(request):
-    global columns,table,username,password
-    add_table,values,check,columns,myresult = "",[],False,[],[]
-    if username == "":
-        return redirect('/login')
-    try:
-        mydb = mysql.connector.connect(
-        host ="localhost",
-        user = username,
-        passwd = password,
-        database ="book"
-        )
-        mycursor = mydb.cursor()
-        mycursor.execute(("INSERT INTO cinsert (No, ID) VALUES (%s, %s)"),['1','1'])
-        mydb.commit()
-        mycursor.close()
-        mydb.close()
-        check = True
-    except mysql.connector.errors.ProgrammingError:
-        messages.info(request, '!!! User Error !!!')
-    if request.method == 'POST' and check:
-        table = request.POST['Select_Table']
-        mydb = mysql.connector.connect(
-        host ="localhost",
-        user = username,
-        passwd = password,
-        database ="book"
-        )
-        mycursor = mydb.cursor()
-        try:
-            sql = "SELECT * FROM "+str(table)
-            mycursor.execute(sql)
-            columns = mycursor.column_names
-            # columns = list(columns) + ['Edit','Delete']
-            myresult = mycursor.fetchall()
-        except:
-            myresult,columns = [],[]
-    return render(request,'manage.html',{'choice':SelecttableForm,'myresult':myresult,'columns':columns,'login':username,'logout':status})
-
-#-----------------------------------------------------------------------------------------
 def update(request):
-    global columns,table,username,password,primary_key
-    add_table,values,check,count = "",[],False,0
+    global columns,table,username,password,primary_key,mydb,level
+    add_table,values,count = "",[],0
     if username == "":
         return redirect('/login')
-    try:
-        mydb = mysql.connector.connect(
-        host ="localhost",
-        user = username,
-        passwd = password,
-        database ="book"
-        )
-        mycursor = mydb.cursor()
-        mycursor.execute(("INSERT INTO cinsert (No, ID) VALUES (%s, %s)"),['1','1'])
-        mydb.commit()
-        mycursor.close()
-        mydb.close()
-        check = True
-    except mysql.connector.errors.ProgrammingError:
-        messages.info(request, '!!! User Error !!!')
-    if request.method == 'POST' and 'table' in request.POST and check:
+    if level == 0:
+        return redirect('/home')
+    if request.method == 'POST' and 'table' in request.POST and level:
         table = request.POST['Select_Table']
-        mydb = mysql.connector.connect(
-        host ="localhost",
-        user = username,
-        passwd = password,
-        database ="book"
-        )
         mycursor = mydb.cursor()
         sql = "SELECT * FROM "+str(table)+";"
         mycursor.execute(sql)
+        myresullt = mycursor.fetchall()
         columns = mycursor.column_names
         primary_key = str(columns[0])
         count = 1
@@ -237,7 +162,7 @@ def update(request):
         for column in columns:
             value = request.POST[column]
             values.append(value)
-        values.append(request.POST[primary_key])
+        values.append(request.POST['primary_key'])
         if table == 'Books':
             update_table = ("UPDATE Books "
                             "SET BookID = %s,Title = %s,No_of_Pages  = %s,Publish_No = %s, Category  = %s,PubDate  = %s "
@@ -263,20 +188,120 @@ def update(request):
                             "SET Book_ID=%s, Author_ID=%s "
                             "WHERE Book_ID=%s")
         mydb = mysql.connector.connect(
+            host ="localhost",
+            user = username,
+            passwd = password,
+            database ="book"
+            )
+        mycursor = mydb.cursor()
+        print(values)
+        mycursor.execute(update_table, values)
+        mydb.commit()
+        columns,primary_key = [],""
+        messages.info(request, 'Insert Success!!!')
+    return render(request,'update.html',
+                  {'choice':SelecttableForm,'columns':columns,'login':username,'logout':status,'count':count,'primary_key':primary_key,'level':level})
+#-----------------------------------------------------------------------------------------
+def books(request):
+    global username,status,mydb,level
+    if username == "":
+        return redirect('/login')
+    sql = ("SELECT books.BookID,books.Title,books.Category,authors.Fname,books.PubDate "
+           "FROM ((Books INNER JOIN Write_to ON Books.BookID = Write_to.Book_ID) "
+           "INNER JOIN authors ON authors.No = Write_to.Author_ID);")
+    mycursor = mydb.cursor()
+    mycursor.execute(sql)
+    columns = mycursor.column_names
+    myresult = mycursor.fetchall()
+    return render(request, 'books.html',
+                  {'myresult':myresult,'columns':columns,'name':username,'login':username,'logout':status,'level':level})
+#-------------------------------------------------------------------------------------------
+def delete(request):
+    global columns,table,username,password,primary_key,mydb,level
+    add_table,values,count = "",[],0
+    if username == "":
+        return redirect('/login')
+    if level == 0:
+        return redirect('/home')
+    if request.method == 'POST' and 'table' in request.POST and level:
+        table = request.POST['Select_Table']
+        mycursor = mydb.cursor()
+        sql = "SELECT * FROM "+str(table)+";"
+        mycursor.execute(sql)
+        myresullt = mycursor.fetchall()
+        columns = mycursor.column_names
+        primary_key = str(columns[0])
+        count = 1
+    if request.method == 'POST' and 'delete' in request.POST :
+        value = (request.POST['primary_key'])
+        print(value)
+        if table == 'Books':
+            delete_table = ("DELETE FROM Books WHERE BookID=%s;"%(value))
+        elif table == 'Authors':
+            delete_table = ("DELETE FROM Authors WHERE No=%s;"%(value))
+        elif table == 'Locations':
+            delete_table = ("DELETE FROM Locations WHERE No=%s;"%(value))
+        elif table == 'Publishers':
+            delete_table = ("DELETE FROM Publishers WHERE No=%s;"%(value))
+        elif table == 'Sent_to':
+            delete_table = ("DELETE FROM Sent_to WHERE Author_ID=%s;"%(value))
+        elif table == 'Write_to':
+            delete_table = ("DELETE FROM Write_to WHERE Book_ID=%s;"%(value))
+        mydb = mysql.connector.connect(
+            host ="localhost",
+            user = username,
+            passwd = password,
+            database ="book"
+            )
+        mycursor = mydb.cursor()
+        mycursor.execute(delete_table)
+        mydb.commit()
+        columns,primary_key = [],""
+        messages.info(request, 'Insert Success!!!')
+    return render(request,'delete.html',
+                  {'choice':SelecttableForm,'columns':columns,'login':username,'logout':status,'count':count,'primary_key':primary_key,'level':level})
+#-----------------------------------------------------------------------------------
+def manage(request):
+    global columns,table,username,password,level
+    add_table,values,columns,myresult = "",[],[],[]
+    if username == "":
+        return redirect('/login')
+    if level == 0:
+        return redirect('/home')
+    try:
+        mydb = mysql.connector.connect(
         host ="localhost",
         user = username,
         passwd = password,
         database ="book"
         )
         mycursor = mydb.cursor()
-        mycursor.execute(update_table, values)
+        mycursor.execute(("INSERT INTO cinsert (No, ID) VALUES (%s, %s)"),['1','1'])
         mydb.commit()
         mycursor.close()
         mydb.close()
-        columns,primary_key = [],""
-    return render(request,'update.html',
-                  {'choice':SelecttableForm,'columns':columns,'login':username,'logout':status,'count':count,'primary_key':primary_key})
+    except mysql.connector.errors.ProgrammingError:
+        messages.info(request, '!!! User Error !!!')
+    if request.method == 'POST' and level:
+        table = request.POST['Select_Table']
+        mydb = mysql.connector.connect(
+        host ="localhost",
+        user = username,
+        passwd = password,
+        database ="book"
+        )
+        mycursor = mydb.cursor()
+        try:
+            sql = "SELECT * FROM "+str(table)
+            mycursor.execute(sql)
+            columns = mycursor.column_names
+            # columns = list(columns) + ['Edit','Delete']
+            myresult = mycursor.fetchall()
+        except:
+            myresult,columns = [],[]
+    return render(request,'manage.html',
+                  {'choice':SelecttableForm,'myresult':myresult,'columns':columns,'login':username,'logout':status,'level':level})
 
-
+#-----------------------------------------------------------------------------------------
 
 
