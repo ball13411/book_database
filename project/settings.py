@@ -26,7 +26,7 @@ SECRET_KEY = 'prs+%^!7*gr@9mu0tje-2a_z@b7nax*i21*@l(bznr!+!d$32&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://bookdbsysem.herokuapp.com/']
 
 
 # Application definition
