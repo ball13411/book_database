@@ -25,7 +25,6 @@ urlpatterns = [
     url('insert', views.insert),
     url('login', views.login),
     url('database', views.database),
-    url('manage', views.manage),
     url('register',views.register),
     url('books',views.books),
     url('delete', views.delete),

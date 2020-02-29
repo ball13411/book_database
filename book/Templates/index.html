@@ -1,0 +1,57 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<!--{% load static %}-->
+<!--<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">-->
+
+
+<H1><center>Welcome&nbsp;<font color="red">{{ name }}</font> to My Book</center></H1><br/>
+  <body style="background-color:rgb(248, 214, 226)">
+  <center>
+
+    <form method="post" class="form-group row">
+        {% csrf_token %}
+        <label class="col-form-label">Query:</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" placeholder="MySQL" name="query1">
+        </div>
+        <input class="btn btn-primary mb-2" type="submit" value="query" name="query">
+    </form>
+
+    {% if count == 1 %}
+    <form class="form-group row">
+      <label class="col-form-label col-sm-1.5">Search :</label>
+      <div class="col-sm-9">
+          <input type="text" id="myInput" class="form-control"  placeholder="Search for all.." title="Type in a name">
+      </div>
+    </form>
+  <br />
+  </center>
+  </body>
+
+
+<H4>
+  <div class="container">
+    <table class="table table-info" >
+      <thead >
+      <tr class="warning" >
+          {% for column in columns %}
+            <th>{{ column }}</th>
+          {% endfor %}
+      </tr>
+      </thead>
+      <tbody id="Mytable" >
+    {% for result in myresult %}
+        <tr>
+        {% for r in result %}
+            <td>&nbsp;{{ r }}</td>
+        {% endfor %}
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</H4>
+    {% endif %}
+
+{% endblock %}

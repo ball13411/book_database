@@ -1,0 +1,121 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<h1><center>Register User</center></h1>
+<br>
+<form method="post" >
+    {% csrf_token %}
+        <div class="form-group">
+            <label>Username :</label>
+            <input type="text" class="form-control" name="aabb" value="">
+        </div>
+        <div class="form-group">
+            <label>Email :</label>
+            <input type="text" class="form-control" name="Email" value="">
+        </div>
+        <div class="form-group">
+            <label>Password :</label>
+            <input type="password" class="form-control" name="pass" value="">
+        </div>
+        <div class="form-group">
+            <label>Confirm Password :</label>
+            <input type="password" class="form-control" name="con_pass" value="">
+        </div>
+    <input class="btn btn-info" type="submit" value="Register" name="register" >
+</form>
+{% if log == 1 %}
+{% if messages %}
+    {% for message in messages %}
+    <style>
+.alert {
+padding: 20px;
+background-color: #f44336;
+color: white;
+}
+
+.closebtn {
+margin-left: 15px;
+color: white;
+font-weight: bold;
+float: right;
+font-size: 22px;
+line-height: 20px;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.closebtn:hover {
+color: black;
+}
+</style>
+    <div class="alert">
+        <center><strong>{{ message }}</strong>&nbsp;Password and Confirm Password not Macthing!!</center>
+    </div>
+    {% endfor %}
+{% endif %}
+{% endif %}
+
+{% if log == 2 %}
+{% if messages %}
+    {% for message in messages %}
+    <style>
+.alert {
+padding: 20px;
+background-color: #2196F3;
+color: white;
+}
+
+.closebtn {
+margin-left: 15px;
+color: white;
+font-weight: bold;
+float: right;
+font-size: 22px;
+line-height: 20px;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.closebtn:hover {
+color: black;
+}
+</style>
+    <div class="alert">
+        <center><strong>{{ message }}</strong>&nbsp;user already</center>
+    </div>
+    {% endfor %}
+{% endif %}
+{% endif %}
+
+{% if log == 3 %}
+{% if messages %}
+    {% for message in messages %}
+    <style>
+.alert {
+padding: 20px;
+background-color: #f44336;
+color: white;
+}
+
+.closebtn {
+margin-left: 15px;
+color: white;
+font-weight: bold;
+float: right;
+font-size: 22px;
+line-height: 20px;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.closebtn:hover {
+color: black;
+}
+</style>
+    <div class="alert">
+        <center><strong>{{ message }}</strong>&nbsp;Username is already registered!!</center>
+    </div>
+    {% endfor %}
+{% endif %}
+{% endif %}
+{% endblock %}

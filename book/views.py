@@ -310,47 +310,6 @@ def delete(request):
     return render(request,'delete.html',
                   {'choice':SelecttableForm,'columns':columns,'login':username,'logout':status,'count':count,'primary_key':primary_key,'level':level})
 #-----------------------------------------------------------------------------------
-def manage(request):
-    global columns,table,username,password,level
-    add_table,values,columns,myresult = "",[],[],[]
-    if username == "":
-        return redirect('/login')
-    if level == 0:
-        return redirect('/home')
-    try:
-        mydb = mysql.connector.connect(
-        host ="localhost",
-        user = username,
-        passwd = password,
-        database ="book"
-        )
-        mycursor = mydb.cursor()
-        mycursor.execute(("INSERT INTO cinsert (No, ID) VALUES (%s, %s)"),['1','1'])
-        mydb.commit()
-        mycursor.close()
-        mydb.close()
-    except mysql.connector.errors.ProgrammingError:
-        messages.info(request, '!!! User Error !!!')
-    if request.method == 'POST' and level:
-        table = request.POST['Select_Table']
-        mydb = mysql.connector.connect(
-        host ="localhost",
-        user = username,
-        passwd = password,
-        database ="book"
-        )
-        mycursor = mydb.cursor()
-        try:
-            sql = "SELECT * FROM "+str(table)
-            mycursor.execute(sql)
-            columns = mycursor.column_names
-            # columns = list(columns) + ['Edit','Delete']
-            myresult = mycursor.fetchall()
-        except:
-            myresult,columns = [],[]
-    return render(request,'manage.html',
-                  {'choice':SelecttableForm,'myresult':myresult,'columns':columns,'login':username,'logout':status,'level':level})
 
-#-----------------------------------------------------------------------------------------
 
 

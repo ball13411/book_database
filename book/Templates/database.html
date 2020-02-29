@@ -1,0 +1,53 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+
+<body>
+<div class="container">
+  <h1><center>Book Database</center></h1>
+  <br/>
+    <h1>
+    <form method="post">
+      {% csrf_token %}
+      {{ choice }}
+      <input class="btn btn-info" type="submit" value="submit">
+    </form>
+    </h1>
+</div>
+<H4>
+  {% if count == 1 %}
+  <form class="form-group row">
+      <label class="col-form-label col-sm-1.5">Search :</label>
+      <div class="col-sm-10">
+          <input type="text" id="myInput" class="form-control"  placeholder="Search for all.." title="Type in a name">
+      </div>
+  </form>
+
+
+  <div class="container">
+    <table class="table table-striped" >
+      <thead>
+      <tr class="warning">
+          {% for column in columns %}
+            <th>{{ column }}</th>
+          {% endfor %}
+      </tr>
+      </thead>
+      <tbody id="myTable">
+    {% for result in myresult %}
+        <tr>
+        {% for r in result %}
+            <td>&nbsp;{{ r }}</td>
+        {% endfor %}
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>
+  </div>
+    {% endif %}
+
+</H4>
+</body>
+
+{% endblock %}
+

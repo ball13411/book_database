@@ -1,0 +1,63 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+
+
+<body>
+<div class="container">
+    <h1><center>Delete Database</center></h1>
+    <br/>
+    <h1>
+    <form method="post" >
+      {% csrf_token %}
+      {{ choice }}
+      <input class="btn btn-info" type="submit" value="select" name="table">
+    </form>
+    </h1>
+</div>
+<H4>
+{% if count == 1 %}
+
+<form method="post" >
+    {% csrf_token %}
+    <div class="form-group">
+        <label >Old Primary Key : {{ primary_key }}</label>
+        <input type="text" class="form-control" name="primary_key" value="">
+    </div>
+    <input class="btn btn-info" align = "right"  type="submit" value="DELETE" name="delete" >
+</form>
+{% endif %}
+</H4>
+</body>
+
+{% if messages %}
+{% for message in messages %}
+<style>
+.alert {
+padding: 20px;
+background-color: #2196F3;
+color: white;
+}
+
+.closebtn {
+margin-left: 15px;
+color: white;
+font-weight: bold;
+float: right;
+font-size: 22px;
+line-height: 20px;
+cursor: pointer;
+transition: 0.3s;
+}
+
+.closebtn:hover {
+color: black;
+}
+</style>
+<div class="alert info">
+    <center><strong>{{ message }}</strong>&nbsp;your can see new value in database</center>
+</div>
+{% endfor %}
+{% endif %}
+
+{% endblock %}
